@@ -1,0 +1,395 @@
+.profile-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    min-height: 100vh; /* 直接使用100vh */
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.profile-header h1 {
+    margin: 0;
+    color: #333;
+    font-size: 24px;
+}
+
+.profile-main {
+    display: flex;
+    gap: 30px;
+    flex: 1; /* 让主要内容区域填充剩余空间 */
+}
+
+/* 左侧导航菜单样式 */
+.profile-nav {
+    width: 200px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px 0;
+}
+
+.profile-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.nav-item i {
+    margin-right: 10px;
+    width: 20px;
+    text-align: center;
+}
+
+.nav-item:hover {
+    background-color: #e9ecef;
+    color: #333;
+}
+
+.nav-item.active {
+    background-color: #e3f2fd;
+    color: #2196F3;
+    border-left: 4px solid #2196F3;
+}
+
+/* 右侧内容区域样式 */
+.profile-content {
+    flex: 1;
+    overflow-y: auto; /* 如果内容过多，允许滚动 */
+}
+
+.profile-section {
+    display: none;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.profile-section.active {
+    display: block;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+}
+
+.verification-code-group {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    position: relative;
+}
+
+.verification-code-group input {
+    flex: 1;
+}
+
+.verification-code-group button {
+    white-space: nowrap;
+}
+
+.verification-code-group button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.countdown {
+    color: #666;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+}
+
+.verification-button-group {
+    margin-top: 20px;
+}
+
+.verification-button-group .btn-block {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+}
+
+/* 文件列表样式 */
+.file-list-container {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.file-list-header {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+    font-weight: 500;
+}
+
+.file-list {
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+}
+
+/* 隐藏滚动条 */
+.file-list::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+}
+
+.file-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    align-items: center;
+}
+
+.file-item:last-child {
+    border-bottom: none;
+}
+
+.file-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.file-action-btn {
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.file-action-btn:hover {
+    background-color: #f0f0f0;
+    color: #2196F3;
+}
+
+/* 按钮样式 */
+.btn {
+    background-color: #2196F3;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #0b7dda;
+}
+
+.btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+#backToChat {
+    background-color: #6c757d;
+}
+
+#backToChat:hover {
+    background-color: #5a6268;
+}
+
+#changePasswordBtn, #changeEmailBtn {
+    width: 100%;
+    margin-top: 20px;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+}
+
+/* 预览区域样式 */
+.preview-container {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #ddd;
+}
+
+.preview-header h3 {
+    margin: 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.preview-content {
+    padding: 15px;
+    max-height: 400px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+/* Markdown 样式调整 */
+.preview-content.markdown-body {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 4px;
+}
+
+.preview-content.markdown-body h1,
+.preview-content.markdown-body h2,
+.preview-content.markdown-body h3 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.preview-content.markdown-body p {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.preview-content.markdown-body ul,
+.preview-content.markdown-body ol {
+    padding-left: 2em;
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.preview-content.markdown-body code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27, 31, 35, 0.05);
+    border-radius: 3px;
+}
+
+.preview-content.markdown-body pre {
+    padding: 16px;
+    overflow: auto;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f6f8fa;
+    border-radius: 3px;
+}
+
+.preview-content.markdown-body blockquote {
+    padding: 0 1em;
+    color: #6a737d;
+    border-left: 0.25em solid #dfe2e5;
+    margin: 0 0 16px 0;
+}
+
+.preview-content::-webkit-scrollbar {
+    display: none;
+}
+
+/* Excel表格样式 */
+.excel-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+    font-size: 14px;
+}
+
+.excel-table th {
+    background-color: #f8f9fa;
+    font-weight: 500;
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.excel-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+
+.excel-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.excel-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+.preview-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.preview-actions .btn-small {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+#downloadReport {
+    background-color: #28a745;
+}
+
+#downloadReport:hover {
+    background-color: #218838;
+}
+
+.loading-indicator {
+    padding: 10px;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    grid-column: span 3;
+} 

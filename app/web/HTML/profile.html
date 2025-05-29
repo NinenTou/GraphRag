@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 文件分析系统</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/profile.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css/github-markdown.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+    <div class="profile-container">
+        <header class="profile-header">
+            <h1>个人中心</h1>
+            <button id="backToChat" class="btn btn-small">
+                <i class="fas fa-arrow-left"></i> 返回聊天
+            </button>
+        </header>
+
+        <div class="profile-main">
+            <!-- 左侧导航菜单 -->
+            <nav class="profile-nav">
+                <ul>
+                    <li class="nav-item active" data-section="basic-info">
+                        <i class="fas fa-user"></i>
+                        <span>个人信息</span>
+                    </li>
+                    <li class="nav-item" data-section="email-settings">
+                        <i class="fas fa-envelope"></i>
+                        <span>邮箱设置</span>
+                    </li>
+                    <li class="nav-item" data-section="password-settings">
+                        <i class="fas fa-key"></i>
+                        <span>修改密码</span>
+                    </li>
+                    <li class="nav-item" data-section="file-management">
+                        <i class="fas fa-folder"></i>
+                        <span>文件管理</span>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- 右侧内容区域 -->
+            <div class="profile-content">
+                <!-- 个人信息部分 -->
+                <section id="basic-info" class="profile-section active">
+                    <h2>基本信息</h2>
+                    <div class="info-item">
+                        <label>用户名：</label>
+                        <span id="username"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>邮箱：</label>
+                        <span id="email"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>注册时间：</label>
+                        <span id="registerTime"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>对话次数：</label>
+                        <span id="chatCount">0</span>
+                    </div>
+                </section>
+
+                <!-- 邮箱设置部分 -->
+                <section id="email-settings" class="profile-section">
+                    <h2>邮箱设置</h2>
+                    <div class="form-group">
+                        <label>当前邮箱：</label>
+                        <span id="currentEmail"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>新邮箱：</label>
+                        <input type="email" id="newEmail" placeholder="请输入新邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label>验证码：</label>
+                        <div class="verification-code-group">
+                            <input type="text" id="emailCode" placeholder="请输入验证码">
+                            <button id="sendEmailCode" class="btn btn-small">发送验证码</button>
+                        </div>
+                    </div>
+                    <button id="changeEmailBtn" class="btn">确认修改</button>
+                </section>
+
+                <!-- 修改密码部分 -->
+                <section id="password-settings" class="profile-section">
+                    <h2>修改密码</h2>
+                    <div class="form-group">
+                        <label>当前密码：</label>
+                        <input type="password" id="currentPassword" placeholder="请输入当前密码">
+                    </div>
+                    <div class="form-group">
+                        <label>验证码：</label>
+                        <div class="verification-code-group">
+                            <input type="text" id="passwordCode" placeholder="请输入验证码">
+                            <button id="sendPasswordCode" class="btn btn-small">发送验证码</button>
+                        </div>
+                    </div>
+                    <div class="form-group verification-button-group">
+                        <button id="verifyPasswordCode" class="btn btn-block">验证验证码</button>
+                    </div>
+                    <div id="newPasswordGroup" style="display: none;">
+                        <div class="form-group">
+                            <label>新密码：</label>
+                            <input type="password" id="newPassword" placeholder="请输入新密码">
+                        </div>
+                        <div class="form-group">
+                            <label>确认新密码：</label>
+                            <input type="password" id="confirmPassword" placeholder="请再次输入新密码">
+                        </div>
+                        <div class="form-group">
+                            <button id="changePasswordBtn" class="btn btn-block">确认修改</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 文件管理部分 -->
+                <section id="file-management" class="profile-section">
+                    <h2>文件管理</h2>
+                    <div class="file-list-container">
+                        <div class="file-list-header">
+                            <span>文件名</span>
+                            <span>上传时间</span>
+                            <span>操作</span>
+                        </div>
+                        <div id="fileList" class="file-list">
+                            <!-- 文件列表将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                    <div id="previewContainer" class="preview-container" style="display: none;">
+                        <div class="preview-header">
+                            <h3 id="previewTitle">预览文件</h3>
+                            <div class="preview-actions">
+                                <button id="downloadReport" class="btn btn-small">
+                                    <i class="fas fa-download"></i> 导出Word
+                                </button>
+                                <button id="closePreview" class="btn btn-small">
+                                    <i class="fas fa-times"></i> 关闭预览
+                                </button>
+                            </div>
+                        </div>
+                        <div id="previewContent" class="preview-content">
+                            <!-- 预览内容将通过JavaScript动态加载 -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='JS/script.js') }}"></script>
+</body>
+</html> 
