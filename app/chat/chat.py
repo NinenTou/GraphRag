@@ -1,6 +1,5 @@
 import os 
 from flask import Flask, Blueprint, render_template, jsonify, request
-from flask_login import login_required
 from flask_cors import CORS
 
 from ..excel import ExcelProcess
