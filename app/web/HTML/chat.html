@@ -3,54 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>文件分析系统 - 聊天</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/style.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- 在chat.html的head部分添加 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/python.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/javascript.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/json.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/sql.min.js"></script>
+    <title>智能数据分析平台 | AIExcel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='CSS/chat.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <header class="chat-header">
-            <h1>文件分析系统</h1>
-            <div class="user-info">
-                <a href="/profile" id="usernameDisplay" class="username-link"></a>
-                <button id="logoutBtn" class="btn btn-small">退出</button>
-            </div>
-        </header>
-
-        <div class="file-section">
-            <div class="file-controls">
-                <input type="file" id="fileInput" style="display: none;" accept=".txt,.pdf,.doc,.docx,.xls,.xlsx">
-                <button id="uploadBtn" class="btn btn-small">
-                    <i class="fas fa-upload"></i> 上传文件
-                </button>
-            </div>
-            <div class="file-list" id="fileList">
-                <!-- 文件列表将通过JS动态加载 -->
-            </div>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo">
+            <i class="fas fa-brain"></i>
+            AIExcel
+        </div>
+        
+        <div class="upload-section">
+            <input type="file" id="excel-file" accept=".xlsx, .xls" hidden>
+            <button class="upload-btn" onclick="document.getElementById('excel-file').click()">
+                <i class="fas fa-file-upload"></i>
+                上传数据文件
+            </button>
         </div>
 
-        <div class="chat-section">
-            <div class="chat-messages" id="chatMessages">
-                <!-- 聊天消息将通过JS动态加载 -->
-            </div>
-
-            <div class="chat-input">
-                <textarea id="messageInput" placeholder="输入您的问题..."></textarea>
-                <button id="sendBtn" class="btn">
-                    <i class="fas fa-paper-plane"></i> 发送
-                </button>
+        <div class="file-indicator" id="file-indicator" style="display: none;">
+            <i class="fas fa-file-excel" style="color: #4CAF50;"></i>
+            <div>
+                <div class="file-name" style="font-weight: 500;"></div>
+                <div class="file-size" style="font-size: 0.875rem; color: var(--text-secondary);"></div>
             </div>
         </div>
     </div>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+        <div class="chat-container">
+            <div class="chat-header">
+                <h1>
+                    <i class="fas fa-comments"></i>
+                    数据分析助手
+                </h1>
+            </div>
+
+            <div class="chat-messages" id="chat-messages">
+                <div class="message">
+                    <div class="message-bubble bot-message">
+                        <i class="fas fa-robot" style="margin-right: 0.5rem;"></i>
+                        您好！我是AIExcel助手，请上传您的数据文件后开始提问。
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" class="chat-input" placeholder="输入您的问题，例如：'显示前5行数据' 或 '承保公司统计'..." id="chat-input">
+                <button class="send-btn" id="send-btn">
+                    发送
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </main>
 
     <script src="{{ url_for('static', filename='JS/chat.js') }}"></script>
 </body>

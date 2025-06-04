@@ -27,10 +27,10 @@ def upload_file():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
     
-    if not ExcelProcess.allowed_file(file.filename):
+    if not ExcelProcess.allowed_file(file.filename): # type: ignore
         return jsonify({"error": "请上传表格"}), 400
 
-    file_path = os.path.join(ExcelProcess.UPLOAD_FOLDER, file.filename)
+    file_path = os.path.join(ExcelProcess.UPLOAD_FOLDER, file.filename) # type: ignore
     file.save(file_path)
 
     try:
@@ -46,7 +46,7 @@ def upload_file():
 @chat_bp.route('/query', methods=['POST'])
 def query():
     data = request.json
-    question = data.get('question')
+    question = data.get('question') # type: ignore
     if not question:
         return jsonify({"error": "问题不能为空"}), 400
 

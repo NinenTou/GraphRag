@@ -25,8 +25,8 @@ def login():
 
         if not data:
             return jsonify({'success': False, 'message': '用户名不存在'}), 401
-        
-        db_password = data['password']
+
+        db_password = data[1]
 
         if password != db_password:
             return jsonify({'success': False, 'message': '密码错误'}), 401

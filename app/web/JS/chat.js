@@ -1,262 +1,94 @@
-document.addEventListener("DOMContentLoaded", function() {
-    initChatPage();
-});
+// 文件上传处理
+const fileInput = document.getElementById('excel-file');
+const fileIndicator = document.getElementById('file-indicator');
 
-function initChatPage() {
-    // 显示用户名
-    const params = new URLSearchParams(location.search);
-    document.getElementById('usernameDisplay').textContent = `欢迎, ${params.get('username') || '用户'}`;
+fileInput.addEventListener('change', function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        const formData = new FormData();
+        formData.append('file', file);
 
-    // 初始化文件上传功能
-    const uploadBtn = document.getElementById('uploadBtn');
-    const fileInput = document.getElementById('fileInput');
+        // 显示文件信息
+        fileIndicator.style.display = 'flex';
+        fileIndicator.querySelector('.file-name').textContent = file.name;
+        fileIndicator.querySelector('.file-size').textContent = 
+            (file.size / 1024 / 1024).toFixed(2) + ' MB';
 
-    uploadBtn.addEventListener('click', function() {
-        fileInput.click();
-    });
-
-    fileInput.addEventListener('change', function() {
-        if (this.files.length > 0) {
-            uploadFile(this.files[0]);
-            this.value = ''; // 重置input
-        }
-    });
-
-    // 初始化退出功能
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-        fetch('/logout', { method: 'GET' })
-            .then(() => {
-                sessionStorage.clear();
-                window.location.href = '/login';
-            });
-    });
-
-    // 初始化发送消息功能
-    const messageInput = document.getElementById('messageInput');
-    const sendBtn = document.getElementById('sendBtn');
-
-    sendBtn.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    // 初始化无操作超时检测
-    initInactivityTimer();
-
-    // 加载用户文件和聊天历史
-    loadFiles();
-}
-
-// 初始化无操作计时器
-function initInactivityTimer() {
-    function resetInactivityTimer() {
-        clearTimeout(inactivityTimer);
-        inactivityTimer = setTimeout(logoutDueToInactivity, 30 * 60 * 1000); // 30分钟
-    }
-
-    function logoutDueToInactivity() {
-        alert('由于长时间无操作，您已自动退出登录');
-        fetch('/logout', { method: 'GET' })
-            .then(() => {
-                sessionStorage.clear();
-                window.location.href = '/login';
-            });
-    }
-
-    // 添加事件监听器
-    ['mousemove', 'keypress', 'click', 'scroll'].forEach(event => {
-        document.addEventListener(event, resetInactivityTimer);
-    });
-
-    // 初始化计时器
-    resetInactivityTimer();
-}
-
-// 上传文件
-function uploadFile(file) {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    fetch('/api/files', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            loadFiles();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('文件上传失败');
-    });
-}
-
-// 加载文件列表
-function loadFiles() {
-    fetch('/api/files')
-        .then(response => {
-            if (response.status === 401) {
-                // 会话过期
-                sessionStorage.clear();
-                window.location.href = '/login';
-                return;
-            }
-            return response.json();
+        // 发送文件到后端
+        fetch('http://127.0.0.1:3000/chat/upload', {
+            method: 'POST',
+            body: formData,
         })
+        .then(response => response.json())
         .then(data => {
-            if (data && data.success) {
-                renderFiles(data.files);
+            if (data.message) {
+                addMessage('bot', data.message); // 显示后端返回的消息
+                if (data.data_preview) {
+                    addMessage('bot', `以下是文件的前5行数据：\n${data.data_preview}`);
+                }
+            } else if (data.error) {
+                addMessage('bot', `文件上传失败：${data.error}`);
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            addMessage('bot', '文件上传失败，请检查网络连接。');
+            console.error(error);
         });
-}
-
-// 渲染文件列表
-function renderFiles(files) {
-    const fileList = document.getElementById('fileList');
-    fileList.innerHTML = '';
-
-    if (files.length === 0) {
-        fileList.innerHTML = '<div class="no-files">暂无上传文件</div>';
-        currentFileId = null;
-        return;
     }
+});
 
-    files.forEach(file => {
-        const fileItem = document.createElement('div');
-        fileItem.className = `file-item ${file.id == currentFileId ? 'active-file' : ''}`;
-        fileItem.innerHTML = `
-            <div class="file-name" title="${file.name}">${file.name}</div>
-            <div class="file-actions">
-                <button class="file-action-btn select-btn" data-id="${file.id}">
-                    <i class="fas fa-check"></i>
-                </button>
-                <button class="file-action-btn delete-btn" data-id="${file.id}">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </div>
-        `;
-        fileList.appendChild(fileItem);
-    });
+// 聊天功能
+const chatMessages = document.getElementById('chat-messages');
+const chatInput = document.getElementById('chat-input');
+const sendBtn = document.getElementById('send-btn');
 
-    // 添加选择文件事件
-    document.querySelectorAll('.select-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const fileId = this.getAttribute('data-id');
-            selectFile(fileId);
-        });
-    });
+sendBtn.addEventListener('click', sendMessage);
+chatInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
 
-    // 添加删除文件事件
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const fileId = this.getAttribute('data-id');
-            deleteFile(fileId);
-        });
-    });
-
-    // 如果没有选中文件，默认选中第一个
-    if (!currentFileId && files.length > 0) {
-        selectFile(files[0].id);
-    }
-}
-
-// 选择文件
-function selectFile(fileId) {
-    currentFileId = fileId;
-    loadFiles(); // 重新渲染文件列表以更新选中状态
-
-    // 可以在这里加载与文件相关的聊天历史
-}
-
-// 删除文件
-function deleteFile(fileId) {
-    if (!confirm('确定要删除这个文件吗？')) return;
-
-    fetch('/api/files', {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ file_id: fileId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // 如果删除的是当前选中的文件，清空当前选中
-            if (fileId === currentFileId) {
-                currentFileId = null;
-            }
-            loadFiles();
-        } else {
-            alert(data.message);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('文件删除失败');
-    });
-}
-
-// 发送消息
 function sendMessage() {
-    const messageInput = document.getElementById('messageInput');
-    const message = messageInput.value.trim();
+    const text = chatInput.value.trim();
+    if (!text) return;
 
-    if (!message || isLoading) return;
+    addMessage('user', text);
+    chatInput.value = '';
 
-    // 添加到聊天界面
-    addMessageToChat('user', message);
-    messageInput.value = '';
-
-    // 显示加载中的消息
-    const loadingId = 'loading-' + Date.now();
-    addLoadingMessage(loadingId);
-    isLoading = true;
-
-    // 发送到服务器
-    fetch('/api/chat', {
+    // 发送问题到后端
+    fetch('http://127.0.0.1:3000/chat/query', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            question: message,
-            file_id: currentFileId
-        })
+        body: JSON.stringify({ question: text }),
     })
-    .then(response => {
-        if (response.status === 401) {
-            // 会话过期
-            sessionStorage.clear();
-            window.location.href = '/login';
-            return;
-        }
-        return response.json();
-    })
+    .then(response => response.json())
     .then(data => {
-        removeLoadingMessage(loadingId);
-        isLoading = false;
-
-        if (data && data.success) {
-            addMessageToChat('bot', data.answer);
-        } else if (data) {
-            addMessageToChat('bot', `错误: ${data.message}`);
+        if (data.response) {
+            addMessage('bot', data.response); // 显示后端返回的答案
+        } else if (data.error) {
+            addMessage('bot', `请求失败：${data.error}`);
         }
     })
     .catch(error => {
-        removeLoadingMessage(loadingId);
-        isLoading = false;
-        console.error('Error:', error);
-        addMessageToChat('bot', '请求失败，请稍后再试');
+        addMessage('bot', '请求失败，请检查网络连接。');
+        console.error(error);
     });
+}
+
+function addMessage(type, text) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    
+    const bubble = document.createElement('div');
+    bubble.className = `message-bubble ${type}-message`;
+    bubble.innerHTML = type === 'bot' 
+        ? `<i class="fas fa-robot"></i> ${text}`
+        : text;
+
+    messageDiv.appendChild(bubble);
+    chatMessages.appendChild(messageDiv);
+    
+    // 自动滚动到底部
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
