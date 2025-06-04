@@ -11,18 +11,37 @@ def allowed_file(filename: str) ->bool:
     """
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def jug_file_type(file_path: str) -> pd.DataFrame:
+# def jug_file_type(file_path: str) -> pd.DataFrame:
+#     """
+#     判断表格文件的类型，返回不同 DataFrame
+#     """
+#     file_extension = os.path.splitext(file_path)[1].lower()  # 获取文件扩展名并转换为小写
+#     if file_extension in ['.xls', '.xlsx']:
+#         df = pd.read_excel(file_path)
+#     elif file_extension == '.csv':
+#         df = pd.read_csv(file_path)
+#     else:
+#         raise ValueError(f"不支持的文件格式: {file_extension}")
+#     return df
+
+def jug_file_type(file_path: str) -> dict:
     """
-    判断表格文件的类型，返回不同 DataFrame
+    判断表格文件的类型，返回不同工作表的数据字典
+    对于Excel文件：返回 {sheet_name: DataFrame}
+    对于CSV文件：返回 {'data': DataFrame}
     """
-    file_extension = os.path.splitext(file_path)[1].lower()  # 获取文件扩展名并转换为小写
+    file_extension = os.path.splitext(file_path)[1].lower()
+    
     if file_extension in ['.xls', '.xlsx']:
-        df = pd.read_excel(file_path)
+        # 读取所有工作表
+        return pd.read_excel(file_path, sheet_name=None)
+    
     elif file_extension == '.csv':
-        df = pd.read_csv(file_path)
+        # 单表文件返回字典格式
+        return {'data': pd.read_csv(file_path)}
+    
     else:
         raise ValueError(f"不支持的文件格式: {file_extension}")
-    return df
 
 def detect_date_col(df: pd.DataFrame) -> list:
     """
