@@ -1,4 +1,5 @@
 from .state import State
+from langgraph.types import Command
 import logging
 
 def table_processing_node(state: State):

@@ -7,6 +7,7 @@ import config
 import logging
 from ..excel.ExcelProcess import jug_file_type, detect_date_col
 from agent.build import build_graph
+from agent.workflow import State
 
 def run_workflow(initial_state):
     """在工作线程中运行工作流"""
@@ -82,6 +83,8 @@ def create_data_table(file: str) -> list:
     "is_single_table": len(dfs_dict) == 1,
     "is_get_correct_sql": False,
     "sql_get_iterations": 0,
+    "is_prepared_single_table_ask": False,
+    "is_prepared_multi_table_ask": False
     }
 
     try:
@@ -233,8 +236,8 @@ def excute_sql(sql):
         connection.commit()
         connection.close()
 
-def log_activity(username, activity_type, description):
-    """记录用户活动
+def record_state(state: State):
+    """记录State状态到数据库的活动日志表
     
     Args:
         username: 用户名
