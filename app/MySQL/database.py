@@ -87,6 +87,8 @@ def create_data_table(file: str) -> list:
     "is_prepared_multi_table_ask": False
     }
 
+    record_state(initial_state)
+
     try:
         with connection.cursor() as cursor:
             # 循环处理每个工作表
@@ -193,13 +195,13 @@ def create_data_table(file: str) -> list:
         connection.close()
         return table_names
 
-def delete_data_table(connection: pymysql.Connection):
+def delete_state_table(connection: pymysql.Connection):
     """
-    从MySQL中删除data数据表
+    从MySQL中删除state数据表数据
     """
 
-    table_name = config.DB_DATABASE
-    drop_table_sql = f"DROP TABLE IF EXISTS `{table_name}`;"
+    table_name = config.DB_STATEBASE
+    drop_table_sql = f"DELETE FROM {table_name}`;"
     try:
         with connection.cursor() as cursor:
             cursor.execute(drop_table_sql)
@@ -236,23 +238,53 @@ def excute_sql(sql):
         connection.commit()
         connection.close()
 
+def get_state():
+    """
+    获取当前工作流状态
+    """
+    connection = get_user_db_connection()
+    cur = connection.cursor()
+    try:
+        cur.execute("SELECT * FROM state")
+        result = cur.fetchone()
+        if result:
+            return State(
+                is_single_table=result[0],
+                is_get_correct_sql=result[1],
+                sql_get_iterations=result[2],
+                is_prepared_single_table_ask=result[3],
+                is_prepared_multi_table_ask=result[4]
+            )
+        else:
+            return None
+    except Exception as e:
+        print(f"Error fetching state: {str(e)}")
+        return None
+    finally:
+        cur.close()
+        connection.close()
+
 def record_state(state: State):
     """记录State状态到数据库的活动日志表
     
     Args:
-        username: 用户名
-        activity_type: 活动类型
-        description: 活动描述
+        state (State): 当前工作流对象
     """
     
     # 创建数据库连接
     connection = get_user_db_connection()
     cur = connection.cursor()
+    delete_state_table(connection)
     try:
         cur.execute("""
-            INSERT INTO activity_logs (user_name, activity_type, description)
-            VALUES (%s, %s, %s)
-        """, (username, activity_type, description))
+            REPLACE INTO state (
+            is_single_table,
+            is_get_correct_sql,
+            sql_get_iterations,
+            is_prepared_single_table_ask,
+            is_prepared_multi_table_ask)
+            values (%s, %s, %s, %s, %s)
+        """, (state["is_single_table"], state["is_get_correct_sql"], state["sql_get_iterations"], state["is_prepared_single_table_ask"], state["is_prepared_multi_table_ask"]))
         connection.commit()
     except Exception as e:
         print(f"Error logging activity: {str(e)}")

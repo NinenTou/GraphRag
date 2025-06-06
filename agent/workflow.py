@@ -1,11 +1,10 @@
 from .state import State
-from langgraph.types import Command
 import logging
 
 def table_processing_node(state: State):
     """Process the table based on whether it's a single table or multiple tables."""
     if state["is_single_table"]:
-        logging.info("Processing single table...")
+        print("Processing single table...")
         # 处理单表逻辑
         return {"is_single_table": True}
     else:

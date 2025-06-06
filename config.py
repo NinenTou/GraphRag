@@ -9,9 +9,10 @@ client = OpenAI(
 
 DB_HOST = "localhost"
 DB_USER = "root"
-DB_PASSWORD = "123456" 
+DB_PASSWORD = "12345678" 
 DB_USERBASE = "rag"
 DB_PORT = 3306
 DB_DATABASE = "data"
+DB_STATEBASE = "state"
 
 UPLOAD_FOLDER = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads'))

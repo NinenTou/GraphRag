@@ -1,4 +1,5 @@
 from langgraph.graph import StateGraph, START, END
+from langgraph.checkpoint.memory import MemorySaver
 from .state import State
 from .workflow import table_processing_node
 # , sql_get_node, err_reporter_node, correct_reporter_node
@@ -27,4 +28,4 @@ def build_graph():
     """Build and return the agent workflow graph without memory."""
     # build state graph
     builder = _build_base_graph()
-    return builder.compile()
+    return builder.compile(checkpointer=MemorySaver(), interrupt_after=["table_processing"])
